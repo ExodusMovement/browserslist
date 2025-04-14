@@ -4,3 +4,7 @@ coverage/
 img/
 tsconfig.json
 grammar.w3c-ebnf
+eslint.config.mjs
+.github
+CHANGELOG.md
+.editorconfig
