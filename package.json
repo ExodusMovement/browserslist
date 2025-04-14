@@ -1,5 +1,5 @@
 {
-  "name": "@exodus:browserslist",
+  "name": "@exodus/browserslist",
   "version": "4.24.4",
   "description": "Share target browsers between different front-end tools, like Autoprefixer, Stylelint and babel-env-preset",
   "homepage": "https://github.com/ExodusMovement/browserslist",
