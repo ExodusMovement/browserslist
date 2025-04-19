@@ -13,9 +13,9 @@ var FORMAT =
   'of strings with browser queries'
 
 var dataTimeChecked = false
-var statCache = {}
-var configPathCache = {}
-var parseConfigCache = {}
+var statCache = Object.create(null)
+var configPathCache = Object.create(null)
+var parseConfigCache = Object.create(null)
 
 function checkExtend(name) {
   var use = ' Use `dangerousExtend` option to disable.'
@@ -139,7 +139,7 @@ function parsePackage(file) {
     }
   }
   if (Array.isArray(list) || typeof list === 'string') {
-    list = { defaults: list }
+    list = { __proto__: null, defaults: list }
   }
   for (var i in list) {
     check(list[i])
@@ -165,7 +165,7 @@ function parsePackageOrReadConfig(file) {
 function latestReleaseTime(agents) {
   var latest = 0
   for (var name in agents) {
-    var dates = agents[name].releaseDate || {}
+    var dates = agents[name].releaseDate || Object.create(null)
     for (var key in dates) {
       if (latest < dates[key]) {
         latest = dates[key]
@@ -331,7 +331,7 @@ module.exports = {
   },
 
   parseConfig: function parseConfig(string) {
-    var result = { defaults: [] }
+    var result = { __proto__: null, defaults: [] }
     var sections = ['defaults']
 
     string
@@ -421,11 +421,11 @@ module.exports = {
 
   clearCaches: function clearCaches() {
     dataTimeChecked = false
-    statCache = {}
-    configPathCache = {}
-    parseConfigCache = {}
+    statCache = Object.create(null)
+    configPathCache = Object.create(null)
+    parseConfigCache = Object.create(null)
 
-    this.cache = {}
+    this.cache = Object.create(null)
   },
 
   oldDataWarning: function oldDataWarning(agentsObj) {

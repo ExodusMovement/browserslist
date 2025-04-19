@@ -19,7 +19,7 @@ function find(string, predicate) {
 }
 
 function matchQuery(all, query) {
-  var node = { query: query }
+  var node = { __proto__: null, query: query }
   if (query.indexOf('not ') === 0) {
     node.not = true
     query = query.slice(4)
