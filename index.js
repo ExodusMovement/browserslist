@@ -408,7 +408,7 @@ function browserslist(queries, opts) {
   var context = {
     __proto__: null,
     ignoreUnknownVersions: opts.ignoreUnknownVersions,
-    dangerousExtend: opts.dangerousExtend,
+    dangerousExtend: false,
     mobileToDesktop: opts.mobileToDesktop,
     env: opts.env
   }

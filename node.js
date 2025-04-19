@@ -18,7 +18,7 @@ var configPathCache = Object.create(null)
 var parseConfigCache = Object.create(null)
 
 function checkExtend(name) {
-  var use = ' Use `dangerousExtend` option to disable.'
+  var use = ' `dangerousExtend` disabled by AppSec.'
   if (!CONFIG_PATTERN.test(name) && !SCOPED_CONFIG__PATTERN.test(name)) {
     throw new BrowserslistError(
       'Browserslist config needs `browserslist-config-` prefix. ' + use
@@ -225,9 +225,7 @@ function normalizeUsageData(usageData, data) {
 
 module.exports = {
   loadQueries: function loadQueries(ctx, name) {
-    if (!ctx.dangerousExtend && !process.env.BROWSERSLIST_DANGEROUS_EXTEND) {
-      checkExtend(name)
-    }
+    checkExtend(name)
     var queries = require(require.resolve(name, { paths: ['.', ctx.path] }))
     if (queries) {
       if (Array.isArray(queries)) {
@@ -246,9 +244,7 @@ module.exports = {
   },
 
   loadStat: function loadStat(ctx, name, data) {
-    if (!ctx.dangerousExtend && !process.env.BROWSERSLIST_DANGEROUS_EXTEND) {
-      checkExtend(name)
-    }
+    checkExtend(name)
     var stats = require(require.resolve(
       path.join(name, 'browserslist-stats.json'),
       { paths: ['.'] }
