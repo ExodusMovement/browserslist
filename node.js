@@ -13,12 +13,12 @@ var FORMAT =
   'of strings with browser queries'
 
 var dataTimeChecked = false
-var statCache = {}
-var configPathCache = {}
-var parseConfigCache = {}
+var statCache = Object.create(null)
+var configPathCache = Object.create(null)
+var parseConfigCache = Object.create(null)
 
 function checkExtend(name) {
-  var use = ' Use `dangerousExtend` option to disable.'
+  var use = ' `dangerousExtend` disabled by AppSec.'
   if (!CONFIG_PATTERN.test(name) && !SCOPED_CONFIG__PATTERN.test(name)) {
     throw new BrowserslistError(
       'Browserslist config needs `browserslist-config-` prefix. ' + use
@@ -139,7 +139,7 @@ function parsePackage(file) {
     }
   }
   if (Array.isArray(list) || typeof list === 'string') {
-    list = { defaults: list }
+    list = { __proto__: null, defaults: list }
   }
   for (var i in list) {
     check(list[i])
@@ -165,7 +165,7 @@ function parsePackageOrReadConfig(file) {
 function latestReleaseTime(agents) {
   var latest = 0
   for (var name in agents) {
-    var dates = agents[name].releaseDate || {}
+    var dates = agents[name].releaseDate || Object.create(null)
     for (var key in dates) {
       if (latest < dates[key]) {
         latest = dates[key]
@@ -187,7 +187,7 @@ function getMonthsPassed(date) {
 
 function normalizeStats(data, stats) {
   if (!data) {
-    data = {}
+    data = Object.create(null)
   }
   if (stats && 'dataByBrowser' in stats) {
     stats = stats.dataByBrowser
@@ -195,12 +195,12 @@ function normalizeStats(data, stats) {
 
   if (typeof stats !== 'object') return undefined
 
-  var normalized = {}
+  var normalized = Object.create(null)
   for (var i in stats) {
     var versions = Object.keys(stats[i])
     if (versions.length === 1 && data[i] && data[i].versions.length === 1) {
       var normal = data[i].versions[0]
-      normalized[i] = {}
+      normalized[i] = Object.create(null)
       normalized[i][normal] = stats[i][versions[0]]
     } else {
       normalized[i] = stats[i]
@@ -225,9 +225,7 @@ function normalizeUsageData(usageData, data) {
 
 module.exports = {
   loadQueries: function loadQueries(ctx, name) {
-    if (!ctx.dangerousExtend && !process.env.BROWSERSLIST_DANGEROUS_EXTEND) {
-      checkExtend(name)
-    }
+    checkExtend(name)
     var queries = require(require.resolve(name, { paths: ['.', ctx.path] }))
     if (queries) {
       if (Array.isArray(queries)) {
@@ -246,9 +244,7 @@ module.exports = {
   },
 
   loadStat: function loadStat(ctx, name, data) {
-    if (!ctx.dangerousExtend && !process.env.BROWSERSLIST_DANGEROUS_EXTEND) {
-      checkExtend(name)
-    }
+    checkExtend(name)
     var stats = require(require.resolve(
       path.join(name, 'browserslist-stats.json'),
       { paths: ['.'] }
@@ -302,7 +298,7 @@ module.exports = {
       }
       var usageData = region(compressed)
       normalizeUsageData(usageData, data)
-      usage[country] = {}
+      usage[country] = Object.create(null)
       for (var i in usageData) {
         for (var j in usageData[i]) {
           usage[country][i + ' ' + j] = usageData[i][j]
@@ -321,9 +317,9 @@ module.exports = {
       throw new BrowserslistError('Unknown feature name `' + name + '`.')
     }
     var stats = feature(compressed).stats
-    features[name] = {}
+    features[name] = Object.create(null)
     for (var i in stats) {
-      features[name][i] = {}
+      features[name][i] = Object.create(null)
       for (var j in stats[i]) {
         features[name][i][j] = stats[i][j]
       }
@@ -331,7 +327,7 @@ module.exports = {
   },
 
   parseConfig: function parseConfig(string) {
-    var result = { defaults: [] }
+    var result = { __proto__: null, defaults: [] }
     var sections = ['defaults']
 
     string
@@ -421,11 +417,11 @@ module.exports = {
 
   clearCaches: function clearCaches() {
     dataTimeChecked = false
-    statCache = {}
-    configPathCache = {}
-    parseConfigCache = {}
+    statCache = Object.create(null)
+    configPathCache = Object.create(null)
+    parseConfigCache = Object.create(null)
 
-    this.cache = {}
+    this.cache = Object.create(null)
   },
 
   oldDataWarning: function oldDataWarning(agentsObj) {

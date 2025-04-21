@@ -254,7 +254,7 @@ function normalizeAndroidVersions(androidVersions, chromeVersions) {
 }
 
 function copyObject(obj) {
-  var copy = {}
+  var copy = Object.create(null)
   for (var key in obj) {
     copy[key] = obj[key]
   }
@@ -350,7 +350,7 @@ function resolve(queries, context) {
       }
     } else {
       if (node.not) {
-        var filter = {}
+        var filter = Object.create(null)
         array.forEach(function (j) {
           filter[j] = true
         })
@@ -364,7 +364,7 @@ function resolve(queries, context) {
 }
 
 function prepareOpts(opts) {
-  if (typeof opts === 'undefined') opts = {}
+  if (typeof opts === 'undefined') opts = Object.create(null)
 
   if (typeof opts.path === 'undefined') {
     opts.path = path.resolve ? path.resolve('.') : '.'
@@ -394,8 +394,8 @@ function checkQueries(queries) {
   }
 }
 
-var cache = {}
-var parseCache = {}
+var cache = Object.create(null)
+var parseCache = Object.create(null)
 
 function browserslist(queries, opts) {
   opts = prepareOpts(opts)
@@ -406,8 +406,9 @@ function browserslist(queries, opts) {
     return QUERIES[node.type].needsPath
   })
   var context = {
+    __proto__: null,
     ignoreUnknownVersions: opts.ignoreUnknownVersions,
-    dangerousExtend: opts.dangerousExtend,
+    dangerousExtend: false,
     mobileToDesktop: opts.mobileToDesktop,
     env: opts.env
   }
@@ -419,7 +420,7 @@ function browserslist(queries, opts) {
   env.oldDataWarning(browserslist.data)
   var stats = env.getStat(opts, browserslist.data)
   if (stats) {
-    context.customUsage = {}
+    context.customUsage = Object.create(null)
     for (var browser in stats) {
       fillUsage(context.customUsage, browser, stats[browser])
     }
@@ -466,10 +467,11 @@ browserslist.parse = function (queries, opts) {
 }
 
 // Will be filled by Can I Use data below
-browserslist.cache = {}
-browserslist.data = {}
+browserslist.cache = Object.create(null)
+browserslist.data = Object.create(null)
 browserslist.usage = {
-  global: {},
+  __proto__: null,
+  global: Object.create(null),
   custom: null
 }
 
@@ -478,6 +480,7 @@ browserslist.defaults = ['> 0.5%', 'last 2 versions', 'Firefox ESR', 'not dead']
 
 // Browser names aliases
 browserslist.aliases = {
+  __proto__: null,
   fx: 'firefox',
   ff: 'firefox',
   ios: 'ios_saf',
@@ -496,6 +499,7 @@ browserslist.aliases = {
 // Fallback to a similar browser for unknown versions
 // Note op_mob is not included as its chromium versions are not in sync with Opera desktop
 browserslist.desktopNames = {
+  __proto_: null,
   and_chr: 'chrome',
   and_ff: 'firefox',
   ie_mob: 'ie',
@@ -503,7 +507,7 @@ browserslist.desktopNames = {
 }
 
 // Aliases to work with joined versions like `ios_saf 7.0-7.1`
-browserslist.versionAliases = {}
+browserslist.versionAliases = Object.create(null)
 
 browserslist.clearCaches = env.clearCaches
 browserslist.parseConfig = env.parseConfig
@@ -517,13 +521,13 @@ browserslist.coverage = function (browsers, stats) {
   if (typeof stats === 'undefined') {
     data = browserslist.usage.global
   } else if (stats === 'my stats') {
-    var opts = {}
+    var opts = Object.create(null)
     opts.path = path.resolve ? path.resolve('.') : '.'
     var customStats = env.getStat(opts)
     if (!customStats) {
       throw new BrowserslistError('Custom usage statistics was not provided')
     }
-    data = {}
+    data = Object.create(null)
     for (var browser in customStats) {
       fillUsage(data, browser, customStats[browser])
     }
@@ -539,7 +543,7 @@ browserslist.coverage = function (browsers, stats) {
     if ('dataByBrowser' in stats) {
       stats = stats.dataByBrowser
     }
-    data = {}
+    data = Object.create(null)
     for (var name in stats) {
       for (var version in stats[name]) {
         data[name + ' ' + version] = stats[name][version]
@@ -831,7 +835,7 @@ var QUERIES = {
       var popularity = parseFloat(node.popularity)
       var stats = env.loadStat(context, node.config, browserslist.data)
       if (stats) {
-        context.customUsage = {}
+        context.customUsage = Object.create(null)
         for (var browser in stats) {
           fillUsage(context.customUsage, browser, stats[browser])
         }
@@ -919,7 +923,8 @@ var QUERIES = {
     select: function (context, node) {
       env.loadFeature(browserslist.cache, node.feature)
       var withPartial = node.supportType !== 'fully'
-      var features = browserslist.cache[node.feature]
+      var features = Object.create(null)
+      features = browserslist.cache[node.feature]
       var result = []
       for (var name in features) {
         var data = byName(name, context)
@@ -934,7 +939,8 @@ var QUERIES = {
           name in browserslist.desktopNames &&
           isSupported(features[name][data.released[iMax]], withPartial)
         data.versions.forEach(function (version) {
-          var flags = features[name][version]
+          var flags = Object.create(null)
+          flags = features[name][version]
           if (flags === undefined && checkDesktop) {
             flags = features[browserslist.desktopNames[name]][version]
           }
@@ -1206,6 +1212,7 @@ var QUERIES = {
   for (var name in agents) {
     var browser = agents[name]
     browserslist.data[name] = {
+      __proto__: null,
       name: name,
       versions: normalize(agents[name].versions),
       released: normalize(agents[name].versions.slice(0, -3)),
@@ -1213,7 +1220,7 @@ var QUERIES = {
     }
     fillUsage(browserslist.usage.global, name, browser.usage_global)
 
-    browserslist.versionAliases[name] = {}
+    browserslist.versionAliases[name] = Object.create(null)
     for (var i = 0; i < browser.versions.length; i++) {
       var full = browser.versions[i]
       if (!full) continue

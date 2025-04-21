@@ -1,11 +1,25 @@
 var AND_REGEXP = /^\s+and\s+(.*)/i
 var OR_REGEXP = /^(?:,\s*|\s+or\s+)(.*)/i
 
-function flatten(array) {
-  if (!Array.isArray(array)) return [array]
-  return array.reduce(function (a, b) {
-    return a.concat(flatten(b))
-  }, [])
+function flatten(input) {
+  if (!Array.isArray(input)) return [input]
+
+  var result = []
+  var stack = [input]
+
+  while (stack.length > 0) {
+    var current = stack.pop()
+
+    if (Array.isArray(current)) {
+      for (var i = current.length - 1; i >= 0; i--) {
+        stack.push(current[i])
+      }
+    } else {
+      result.push(current)
+    }
+  }
+
+  return result
 }
 
 function find(string, predicate) {
@@ -19,7 +33,7 @@ function find(string, predicate) {
 }
 
 function matchQuery(all, query) {
-  var node = { query: query }
+  var node = { __proto__: null, query: query }
   if (query.indexOf('not ') === 0) {
     node.not = true
     query = query.slice(4)
